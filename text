@@ -1,0 +1,48 @@
+import time
+import cv2
+from ffpyplayer.player import MediaPlayer
+
+video_path = "/Users/kirgiz/Downloads/Rick_Astley_-_Never_Gonna_Give_You_Up_(Official_Music_Video).mp4"
+
+video = cv2.VideoCapture(video_path)
+music_player = MediaPlayer(video_path)
+
+fps = video.get(cv2.CAP_PROP_FPS)
+seconds_per_frame = 1 / fps
+
+treshold = 3
+treshold_type = 120
+
+GRAY_SCALE = "@$#*!=;:~-,. "
+
+def printFrameInConsole(frame, height, width):
+    console_out_dim = ( int(width / SCALE),int(height / SCALE))
+    frame = cv2.resize(frame, console_out_dim, interpolation = cv2.INTER_AREA)
+
+    to_print = ''
+    for row in frame: 
+        to_print += ' '.join([ grayScaleNumber(num) for num in row.tolist()]) + "\n"
+
+    sys.stdout.write(to_print)
+    sys.stdout.flush()
+
+while True:
+  def grayScaleNumber(num):
+    scale_size = len(GRAY_SCALE)
+    index = int((num / 255) * scale_size)
+    return GRAY_SCALE[index]
+
+  frame_t_start = time.time()
+
+  frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+  _, frame = cv2.threshold(frame, treshold, 255, treshold_type)
+  printFrameInConsole(frame, 100, 100)
+
+  if cv2.waitKey(1) & 0xFF == ord("q"):
+    break
+
+  while (time.time() - frame_t_start) < seconds_per_frame:
+    pass
+
+video.release()
+cv2.destroyAllWindows()
